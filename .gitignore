@@ -31,3 +31,10 @@
 *.tlog
 *.db
 *.opendb
+\.vs/Test/v14/\.suo
+
+x64/Debug/
+
+*.ilk
+
+*.lastbuildstate
