@@ -1,6 +1,7 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include <set>
 #include <etwlib.h>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
@@ -14,6 +15,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QTextEdit>
 #include "ui_test.h"
 
 class Test : public QWidget
@@ -30,27 +32,41 @@ private slots:
 	void CheckBoxClicked(int state);
 	void SeclectAllProviders(int state);
 	void SeclectAllFiltedProviders(int state);
+	void ShowSeclectedProviders(int);
 private:
 	std::vector<std::wstring> allProvidersName;
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();
 	QPushButton* CreatSavePathButton();
+	QCheckBox *selectFilterAll;
 	QCheckBox *CreatSelectAllCheckBox();
+	QCheckBox *CreatShowSelectedProvidersBox();
 	QGroupBox *CreatProvidesGroupBox();
 	QLineEdit *CreatFilterLineEdit(); 
 	QCheckBox *selcetAll;
+	//QScrollArea *scrollAreaFilted;
+	QScrollArea* scrollAreaFilterLeft;
 	QScrollArea *scrollAreaAllProvider;
+	QScrollArea *scrollAreaSelectedProviders;
 	QVBoxLayout *vBoxAllProviders;
+	QVBoxLayout* filterLeftLayout;
+	//QVBoxLayout *selectedFilterAllLayOut;
+	QGroupBox* filterLeftBox;
+	QGroupBox* groupBoxSelectedFilterAll;
 	QGroupBox* groupBoxAllProviders;
+	QLineEdit* lineEditSelectedAllProviders;
 	QLineEdit* filter;
 	QGridLayout* grid;
 	QPushButton* start;
 	QPushButton* end;
 	QPushButton* save;
+	QCheckBox* showSelectedProviders;
+	QTextEdit* textShowSelectedProviders;
 	ETWLib::ETWSession* session;
 	ETWLib::SessionParameters* param;
 	std::vector<QCheckBox*> vecAllProviders;//1079
 	std::vector<QCheckBox*> vecAllFilterProviders;
+	std::set<std::wstring> SelectedProviders;
 	std::wstring filePath;
 	//Ui::TestClass ui;
 };
