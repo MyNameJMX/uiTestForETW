@@ -4,10 +4,17 @@
 
 
 
-Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL),selectFiltedAll(NULL)
+Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL), selectFiltedAll(NULL), 
+filterLeftProvidersScroll(NULL),
+filterLeftLayOut(NULL),
+filterLeftBox(NULL),
+
+scrollAreaFilted(NULL),
+vBoxLayOutFilted(NULL),//vBoxLayOutFilted
+groupBoxFilted(NULL)//groupBoxFilted
+
 {
-	//scrollAreaFilted = new QScrollArea;
-	//selectedFilterAllLayOut = new QVBoxLayout;
+	timer = new QTimer(this);
 	groupBoxSelectedFilterAll = new QGroupBox(tr("searching result after filter"));
 	groupBoxSelectedFilterAll->setFlat(true);
 	allProvidersName = ETWLib::GetUserProvidersName();
@@ -23,30 +30,30 @@ Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL),select
 	scrollAreaAllProvider = new QScrollArea;
 	scrollAreaAllProvider->setWidget(CreatProvidesGroupBox());
 	grid->addWidget(scrollAreaAllProvider, 1, 0);
-
 	textShowSelectedProviders = new QTextEdit;
 	grid->addWidget(textShowSelectedProviders, 1, 2);
-
 	grid->setColumnStretch(0, 1);
 	grid->setColumnStretch(1, 1);
-	grid->setColumnStretch(2, 0.5);
+	grid->setColumnStretch(2, 1);
 	grid->setRowStretch(0, 1);
 	grid->setRowStretch(1, 1);
 	this->setLayout(grid);
 	this->setWindowTitle(tr("Test Version"));
 	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
 	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1);
-	filePath = L"Test.etl";//if path not set,default path "Workspace\Test.etl" ,
-	this->resize(480, 320);
+	filePath = (QCoreApplication::applicationDirPath()).toStdWString ()+ L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
+	this->resize(850, 490);
 
 	//FOR FILTER
-	filterLeftProvidersScroll = new QScrollArea;
-	filterLeftLayOut = new QVBoxLayout;
-	filterLeftBox = new QGroupBox;
+	//filterLeftProvidersScroll = new QScrollArea;
+	//filterLeftLayOut = new QVBoxLayout;
+	//filterLeftBox = new QGroupBox;
 
-	scrollAreaFilter = new QScrollArea;
-	vBoxLayOutFilted = new QVBoxLayout;//vBoxLayOutFilted
-	groupBoxFilted = new QGroupBox(tr("Searching result"));//groupBoxFilted
+	//scrollAreaFilted = new QScrollArea;
+	//vBoxLayOutFilted = new QVBoxLayout;//vBoxLayOutFilted
+	//groupBoxFilted = new QGroupBox(tr("Searching result"));//groupBoxFilted
+
+
 }
 
 QPushButton* Test::CreatStartButton()
@@ -91,8 +98,8 @@ QCheckBox* Test::CreatShowSelectedProvidersBox()
 	showSelectedProviders = new QCheckBox(tr("Show selected providers"));
 	showSelectedProviders->setCheckable(true);
 	showSelectedProviders->setChecked(false);
-	connect(showSelectedProviders, SIGNAL(stateChanged(int)), this, SLOT(ShowSeclectedProviders(int)));
-	//showSelectedProviders->setFixedSize(630, 20);
+	connect(showSelectedProviders, SIGNAL(stateChanged(int)), this, SLOT(Timer(int)));
+	//showSelectedProviders->setFixedSize(300, 20);
 	return showSelectedProviders;
 }
 
@@ -119,7 +126,7 @@ QLineEdit* Test::CreatFilterLineEdit()
 {
 	filter = new QLineEdit;
 	filter->setPlaceholderText("Search here!");
-	filter->setFixedSize(300, 20);
+	//filter->setFixedSize(300, 20);
 	connect(filter, SIGNAL(textEdited(const QString)), this, SLOT(HandleFilter()));
 	return filter;
 }
@@ -158,16 +165,6 @@ void Test::HandleFilter()
 		delete selectFiltedAll;
 		selectFiltedAll = NULL;
 	}
-	//if (scrollAreaFilter != NULL)
-	//{
-	//	delete scrollAreaFilter;
-	//	scrollAreaFilter = NULL;
-	//}
-	//if (filterLeftProvidersScroll)
-	//{
-	//	delete filterLeftProvidersScroll;
-	//	filterLeftProvidersScroll = NULL;
-	//}
 		
 	scrollAreaAllProvider->hide();
 	vecAllFilterProviders.clear();//USED FOR BUSHUTOON ALL
@@ -175,19 +172,19 @@ void Test::HandleFilter()
 	QObject* sender = QObject::sender();
 	QString qStrFilter = ((QLineEdit*)sender)->text();//qStrFilter
 
-	filterLeftProvidersScroll = new QScrollArea;
-	filterLeftLayOut = new QVBoxLayout;
-	filterLeftBox = new QGroupBox; 
+	QPointer<QScrollArea> filterLeftProvidersScroll = new QScrollArea;
+	QPointer<QVBoxLayout> filterLeftLayOut = new QVBoxLayout;
+	QPointer<QGroupBox> filterLeftBox = new QGroupBox;
 
-	scrollAreaFilter = new QScrollArea;
-	vBoxLayOutFilted = new QVBoxLayout;//vBoxLayOutFilted
-	groupBoxFilted = new QGroupBox(tr("Searching result"));//groupBoxFilted
+	QPointer<QScrollArea> scrollAreaFilted = new QScrollArea;
+	QPointer<QVBoxLayout> vBoxLayOutFilted = new QVBoxLayout;//vBoxLayOutFilted
+	QPointer<QGroupBox> groupBoxFilted = new QGroupBox(tr("Searching result"));//groupBoxFilted
 
 	selectFiltedAll = new QCheckBox("SelectFiltedAll");//selectFiltedAll
 	connect(selectFiltedAll, SIGNAL(stateChanged(int)), this, SLOT(SeclectAllFiltedProviders(int)));
 	vBoxLayOutFilted->addWidget(selectFiltedAll);
 
-	//vBoxLayOutFilted 此处必须重置
+	//vBoxLayOutFilted reset them here
 	//filterLeftLayOut
 
 	/*for (int idx = 0; idx < vBoxLayOutFilted->count(); idx++)
@@ -202,8 +199,8 @@ void Test::HandleFilter()
 		QLayoutItem * const item = filterLeftLayOut->itemAt(idx);
 		if (dynamic_cast<QWidgetItem *>(item))
 			filterLeftLayOut->removeWidget(item->widget());
-	}
-*/
+	}*/
+
 	for (int i = 0; i < allProvidersName.size(); ++i)
 	{
 		QString qStrProvider = QString::fromStdWString(allProvidersName[i]); //qStrProvider
@@ -220,8 +217,8 @@ void Test::HandleFilter()
 	vBoxLayOutFilted->addStretch(1);
 	groupBoxFilted->setLayout(vBoxLayOutFilted);
 	
-	scrollAreaFilter->setWidget(groupBoxFilted);
-	grid->addWidget(scrollAreaFilter, 1, 1);
+	scrollAreaFilted->setWidget(groupBoxFilted);
+	grid->addWidget(scrollAreaFilted, 1, 1);
 
 	filterLeftBox->setLayout(filterLeftLayOut);
 	filterLeftProvidersScroll->setWidget(filterLeftBox);
@@ -233,23 +230,24 @@ void Test::HandleSave()
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save path"), "", tr("*.etl"));
 	if (fileName.size() == 0)
 	{
-		QMessageBox::information(this, tr("FileSaving"), tr("Please set a path"));
+		QMessageBox::information(this, tr("FileSaving"), tr("Please set a path,if none,default path is workspace"));
+		fileName = QCoreApplication::applicationDirPath() + "/Test.etl";
 	}
-	else
+	filePath = fileName.toStdWString();
+	if (fileName != QCoreApplication::applicationDirPath() + "/Test.etl")
 	{
-		QObject* sender = QObject::sender();
-		((QPushButton*)sender)->setText(fileName);
 		QMessageBox::information(this, tr("FileSaving"), tr("Path already set"));
-		filePath = fileName.toStdWString();
-		if (session == NULL) //Make sure there is only one instance exist
-		{
-			session = new ETWLib::ETWSession(L"TraceTest", filePath);
-			param = new ETWLib::SessionParameters();
-		}
-		param->EnableProfilling(true);
-		session->SetParameters(*param);
-		start->setEnabled(true);
 	}
+	QObject* sender = QObject::sender();
+	((QPushButton*)sender)->setText(fileName);
+	if (session == NULL) //Make sure there is only one instance exist
+	{
+		session = new ETWLib::ETWSession(L"TraceTest", filePath);
+		param = new ETWLib::SessionParameters();
+	}
+	param->EnableProfilling(true);
+	session->SetParameters(*param);
+	start->setEnabled(true);
 }
 
 void Test::CheckBoxClicked(int state)
@@ -298,10 +296,6 @@ void Test::SeclectAllProviders(int state)
 			}
 		}
 	}
-	else
-	{
-		return;
-	}
 }
 
 void Test::SeclectAllFiltedProviders(int state)
@@ -324,17 +318,36 @@ void Test::SeclectAllFiltedProviders(int state)
 	}
 }
 
-void Test::ShowSeclectedProviders(int)
+void Test::Timer(int) 
 {
 	QObject* sender = QObject::sender();
-	if (((QCheckBox*)sender)->isChecked())
+	if (((QCheckBox*)sender)->isChecked()) 
 	{
-		QString text = "";
-		for (auto itor = SelectedProviders.begin(); itor != SelectedProviders.end(); ++itor)
-		{
-			text = text + "\n" + QString::fromStdWString(*itor);
-		}
-		textShowSelectedProviders->setText(text);
+		textShowSelectedProviders->show();
+		connect(timer, SIGNAL(timeout()), this, SLOT(ShowSeclectedProviders()));
+		timer->start(1000);
+	}
+	else 
+	{
+		disconnect(timer, SIGNAL(timeout()), 0, 0);
+		textShowSelectedProviders->hide();
 	}
 }
+
+void Test::ShowSeclectedProviders()
+{
+	QRect  labelRect = QRect(this->textShowSelectedProviders->pos(),this->textShowSelectedProviders->size());
+	QPoint mouseCurPos = QCursor::pos();
+	if (labelRect.contains(mouseCurPos))
+	{
+		return;
+	}
+	QString text = "";
+	for (auto itor = SelectedProviders.begin(); itor != SelectedProviders.end(); ++itor)
+	{
+		text = text + "\n" + QString::fromStdWString(*itor);
+	}
+	textShowSelectedProviders->setText(text);
+}
+
 

@@ -16,6 +16,11 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QTextEdit>
+#include <QPointer>
+#include <QTimer>
+#include <QDebug>
+#include <QPoint>
+#include <QCursor>
 #include "ui_test.h"
 
 class Test : public QWidget
@@ -32,8 +37,10 @@ private slots:
 	void CheckBoxClicked(int state);
 	void SeclectAllProviders(int state);
 	void SeclectAllFiltedProviders(int state);
-	void ShowSeclectedProviders(int);
+	void ShowSeclectedProviders();
+	void Timer(int);
 private:
+	QTimer* timer;
 	std::vector<std::wstring> allProvidersName;
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();
@@ -50,7 +57,7 @@ private:
 	QScrollArea* scrollAreaFilterLeft;
 	QScrollArea *scrollAreaAllProvider;
 	QScrollArea *scrollAreaSelectedProviders;
-	QScrollArea *scrollAreaFilter;
+	QScrollArea *scrollAreaFilted;
 	QVBoxLayout *vBoxAllProviders;
 	QVBoxLayout *vBoxLayOutFilted;
 	QVBoxLayout* filterLeftLayOut;
