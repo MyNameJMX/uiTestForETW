@@ -41,6 +41,7 @@ private slots:
 	void Timer(int);
 private:
 	QTimer* timer;
+	std::vector<ETWLib::SessionInfo> infos;
 	std::vector<std::wstring> allProvidersName;
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();

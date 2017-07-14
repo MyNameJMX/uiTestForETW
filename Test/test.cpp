@@ -8,12 +8,14 @@ Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL), selec
 filterLeftProvidersScroll(NULL),
 filterLeftLayOut(NULL),
 filterLeftBox(NULL),
-
 scrollAreaFilted(NULL),
 vBoxLayOutFilted(NULL),//vBoxLayOutFilted
 groupBoxFilted(NULL)//groupBoxFilted
-
 {
+	ETWLib::QueryAllSessions(infos);
+	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
+	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1); 
+	
 	timer = new QTimer(this);
 	groupBoxSelectedFilterAll = new QGroupBox(tr("searching result after filter"));
 	groupBoxSelectedFilterAll->setFlat(true);
@@ -39,8 +41,6 @@ groupBoxFilted(NULL)//groupBoxFilted
 	grid->setRowStretch(1, 1);
 	this->setLayout(grid);
 	this->setWindowTitle(tr("Test Version"));
-	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
-	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1);
 	filePath = (QCoreApplication::applicationDirPath()).toStdWString ()+ L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
 	this->resize(850, 490);
 
@@ -184,23 +184,6 @@ void Test::HandleFilter()
 	connect(selectFiltedAll, SIGNAL(stateChanged(int)), this, SLOT(SeclectAllFiltedProviders(int)));
 	vBoxLayOutFilted->addWidget(selectFiltedAll);
 
-	//vBoxLayOutFilted reset them here
-	//filterLeftLayOut
-
-	/*for (int idx = 0; idx < vBoxLayOutFilted->count(); idx++)
-	{
-		QLayoutItem * const item = vBoxLayOutFilted->itemAt(idx);
-		if (dynamic_cast<QWidgetItem *>(item))
-			vBoxLayOutFilted->removeWidget(item->widget());
-	}
-
-	for (int idx = 0; idx < filterLeftLayOut->count(); idx++)
-	{
-		QLayoutItem * const item = filterLeftLayOut->itemAt(idx);
-		if (dynamic_cast<QWidgetItem *>(item))
-			filterLeftLayOut->removeWidget(item->widget());
-	}*/
-
 	for (int i = 0; i < allProvidersName.size(); ++i)
 	{
 		QString qStrProvider = QString::fromStdWString(allProvidersName[i]); //qStrProvider
@@ -240,6 +223,15 @@ void Test::HandleSave()
 	}
 	QObject* sender = QObject::sender();
 	((QPushButton*)sender)->setText(fileName);
+
+	for (int i = 0; i < infos.size(); i++)
+	{
+		if (infos[i].SessionName == std::wstring(L"TraceTest"))
+		{
+			ETWLib::ETWSession attachedSession(infos[i].TraceHandle);
+			attachedSession.CloseSession();
+		}
+	}
 	if (session == NULL) //Make sure there is only one instance exist
 	{
 		session = new ETWLib::ETWSession(L"TraceTest", filePath);
