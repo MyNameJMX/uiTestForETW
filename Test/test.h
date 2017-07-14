@@ -29,7 +29,7 @@ class Test : public QWidget
 
 public:
 	Test(QWidget *parent = 0);
-private slots:
+	private slots:
 	void HandleSave();
 	void HandleStart();
 	void HandleEnd();
@@ -50,7 +50,7 @@ private:
 	QCheckBox *CreatSelectAllCheckBox();
 	QCheckBox *CreatShowSelectedProvidersBox();
 	QGroupBox *CreatProvidesGroupBox();
-	QLineEdit *CreatFilterLineEdit(); 
+	QLineEdit *CreatFilterLineEdit();
 	QCheckBox *selcetAll;
 	QCheckBox *selectFiltedAll;
 	//QScrollArea *scrollAreaFilted;

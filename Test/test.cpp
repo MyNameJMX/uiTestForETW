@@ -4,7 +4,7 @@
 
 
 
-Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL), selectFiltedAll(NULL), 
+Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL), selectFiltedAll(NULL),
 filterLeftProvidersScroll(NULL),
 filterLeftLayOut(NULL),
 filterLeftBox(NULL),
@@ -12,10 +12,18 @@ scrollAreaFilted(NULL),
 vBoxLayOutFilted(NULL),//vBoxLayOutFilted
 groupBoxFilted(NULL)//groupBoxFilted
 {
-	ETWLib::QueryAllSessions(infos);
 	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
-	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1); 
-	
+	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1);
+
+	/*for (int i = 0; i < infos.size(); i++)
+	{
+		if (infos[i].SessionName == std::wstring(L"TraceTest"))
+		{
+			ETWLib::ETWSession attachedSession(infos[i].TraceHandle);
+			attachedSession.CloseSession();
+		}
+	}*/
+
 	timer = new QTimer(this);
 	groupBoxSelectedFilterAll = new QGroupBox(tr("searching result after filter"));
 	groupBoxSelectedFilterAll->setFlat(true);
@@ -41,7 +49,7 @@ groupBoxFilted(NULL)//groupBoxFilted
 	grid->setRowStretch(1, 1);
 	this->setLayout(grid);
 	this->setWindowTitle(tr("Test Version"));
-	filePath = (QCoreApplication::applicationDirPath()).toStdWString ()+ L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
+	filePath = (QCoreApplication::applicationDirPath()).toStdWString() + L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
 	this->resize(850, 490);
 
 	//FOR FILTER
@@ -138,10 +146,15 @@ void Test::HandleStart()
 		QMessageBox::information(this, tr("Hint"), tr("Set path first"));
 		return;
 	}
+	param->EnableProfilling(true);
+	session->SetParameters(*param);
 	ULONG status = session->StartSession(ETWLib::LogFileMode);
+	std::vector<ETWLib::SessionInfo> infosUpdate; 
+	ETWLib::QueryAllSessions(infosUpdate);
+	infos = infosUpdate;
 	start->setEnabled(false);
 	end->setEnabled(true);
-	if (status == 0)
+	if (status == 1)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Start failed"));
 	}
@@ -152,8 +165,8 @@ void Test::HandleEnd()
 	session->CloseSession();
 	delete session;
 	delete param;
-	session = new ETWLib::ETWSession(L"TraceTest", filePath);
-	param = new ETWLib::SessionParameters();
+	session = NULL;
+	param = NULL;
 	start->setEnabled(true);
 	end->setEnabled(false);
 }
@@ -165,7 +178,7 @@ void Test::HandleFilter()
 		delete selectFiltedAll;
 		selectFiltedAll = NULL;
 	}
-		
+
 	scrollAreaAllProvider->hide();
 	vecAllFilterProviders.clear();//USED FOR BUSHUTOON ALL
 
@@ -197,11 +210,11 @@ void Test::HandleFilter()
 			filterLeftLayOut->addWidget(vecAllProviders[i]);
 		}
 	}
-	vBoxLayOutFilted->addStretch(1);
+
 	groupBoxFilted->setLayout(vBoxLayOutFilted);
-	
 	scrollAreaFilted->setWidget(groupBoxFilted);
 	grid->addWidget(scrollAreaFilted, 1, 1);
+
 
 	filterLeftBox->setLayout(filterLeftLayOut);
 	filterLeftProvidersScroll->setWidget(filterLeftBox);
@@ -210,20 +223,9 @@ void Test::HandleFilter()
 
 void Test::HandleSave()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save path"), "", tr("*.etl"));
-	if (fileName.size() == 0)
-	{
-		QMessageBox::information(this, tr("FileSaving"), tr("Please set a path,if none,default path is workspace"));
-		fileName = QCoreApplication::applicationDirPath() + "/Test.etl";
-	}
-	filePath = fileName.toStdWString();
-	if (fileName != QCoreApplication::applicationDirPath() + "/Test.etl")
-	{
-		QMessageBox::information(this, tr("FileSaving"), tr("Path already set"));
-	}
-	QObject* sender = QObject::sender();
-	((QPushButton*)sender)->setText(fileName);
-
+	std::vector<ETWLib::SessionInfo> infosUpdate;
+	ETWLib::QueryAllSessions(infosUpdate);
+	infos = infosUpdate;
 	for (int i = 0; i < infos.size(); i++)
 	{
 		if (infos[i].SessionName == std::wstring(L"TraceTest"))
@@ -232,13 +234,21 @@ void Test::HandleSave()
 			attachedSession.CloseSession();
 		}
 	}
+	
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save path"), "", tr("*.etl"));
+	if (fileName.size() == 0)
+	{
+		QMessageBox::information(this, tr("FileSaving"), tr("Please set a path,if none,default path is workspace"));
+		fileName = QCoreApplication::applicationDirPath() + "/Test.etl";
+	}
+	filePath = fileName.toStdWString();
+	QObject* sender = QObject::sender();
+	((QPushButton*)sender)->setText(fileName);
 	if (session == NULL) //Make sure there is only one instance exist
 	{
 		session = new ETWLib::ETWSession(L"TraceTest", filePath);
-		param = new ETWLib::SessionParameters();
+		param = new ETWLib::SessionParameters;
 	}
-	param->EnableProfilling(true);
-	session->SetParameters(*param);
 	start->setEnabled(true);
 }
 
@@ -271,7 +281,7 @@ void Test::SeclectAllProviders(int state)
 {
 	QObject* sender = QObject::sender();
 	std::wstring wstr = ((QCheckBox*)sender)->text().toStdWString();
-	if (filePath.size())
+	if (param)
 	{
 		if (state == Qt::Checked)
 		{
@@ -287,6 +297,10 @@ void Test::SeclectAllProviders(int state)
 				vecAllProviders[i]->setCheckState(Qt::Unchecked);
 			}
 		}
+	} 
+	else
+	{
+		QMessageBox::information(this, tr("Error"), tr("Set path first"));
 	}
 }
 
@@ -294,32 +308,39 @@ void Test::SeclectAllFiltedProviders(int state)
 {
 	QObject* sender = QObject::sender();
 	std::wstring wstr = ((QCheckBox*)sender)->text().toStdWString();
-	if (state == Qt::Checked)
+	if (param) 
 	{
-		for (int i = 0; i < vecAllFilterProviders.size(); ++i)
+		if (state == Qt::Checked)
 		{
-			vecAllFilterProviders[i]->setCheckState(Qt::Checked);
+			for (int i = 0; i < vecAllFilterProviders.size(); ++i)
+			{
+				vecAllFilterProviders[i]->setCheckState(Qt::Checked);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < vecAllFilterProviders.size(); ++i)
+			{
+				vecAllFilterProviders[i]->setCheckState(Qt::Unchecked);
+			}
 		}
 	}
-	else
+	else 
 	{
-		for (int i = 0; i < vecAllFilterProviders.size(); ++i)
-		{
-			vecAllFilterProviders[i]->setCheckState(Qt::Unchecked);
-		}
+		QMessageBox::information(this, tr("Error"), tr("Set path first"));
 	}
 }
 
-void Test::Timer(int) 
+void Test::Timer(int)
 {
 	QObject* sender = QObject::sender();
-	if (((QCheckBox*)sender)->isChecked()) 
+	if (((QCheckBox*)sender)->isChecked())
 	{
 		textShowSelectedProviders->show();
 		connect(timer, SIGNAL(timeout()), this, SLOT(ShowSeclectedProviders()));
 		timer->start(1000);
 	}
-	else 
+	else
 	{
 		disconnect(timer, SIGNAL(timeout()), 0, 0);
 		textShowSelectedProviders->hide();
@@ -328,7 +349,7 @@ void Test::Timer(int)
 
 void Test::ShowSeclectedProviders()
 {
-	QRect  labelRect = QRect(this->textShowSelectedProviders->pos(),this->textShowSelectedProviders->size());
+	QRect  labelRect = QRect(this->textShowSelectedProviders->pos(), this->textShowSelectedProviders->size());
 	QPoint mouseCurPos = QCursor::pos();
 	if (labelRect.contains(mouseCurPos))
 	{
@@ -341,5 +362,3 @@ void Test::ShowSeclectedProviders()
 	}
 	textShowSelectedProviders->setText(text);
 }
-
-
