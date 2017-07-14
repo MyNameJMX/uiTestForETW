@@ -2,6 +2,7 @@
 #define TEST_H
 
 #include <set>
+#include <memory>
 #include <etwlib.h>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
@@ -75,8 +76,9 @@ private:
 	QPushButton* save;
 	QCheckBox* showSelectedProviders;
 	QTextEdit* textShowSelectedProviders;
-	ETWLib::ETWSession* session;
-	ETWLib::SessionParameters* param;
+	std::unique_ptr<ETWLib::ETWSession> session;
+	std::unique_ptr<ETWLib::SessionParameters> param;
+	//ETWLib::SessionParameters* param;
 	std::vector<QCheckBox*> vecAllProviders;//1079
 	std::vector<QCheckBox*> vecAllFilterProviders;
 	std::set<std::wstring> SelectedProviders;

@@ -4,26 +4,16 @@
 
 
 
-Test::Test(QWidget *parent) : QWidget(parent), session(NULL), param(NULL), selectFiltedAll(NULL),
-filterLeftProvidersScroll(NULL),
-filterLeftLayOut(NULL),
-filterLeftBox(NULL),
-scrollAreaFilted(NULL),
-vBoxLayOutFilted(NULL),//vBoxLayOutFilted
-groupBoxFilted(NULL)//groupBoxFilted
+Test::Test(QWidget *parent) : QWidget(parent), session(nullptr), param(nullptr), selectFiltedAll(nullptr),
+filterLeftProvidersScroll(nullptr),
+filterLeftLayOut(nullptr),
+filterLeftBox(nullptr),
+scrollAreaFilted(nullptr),
+vBoxLayOutFilted(nullptr),//vBoxLayOutFilted
+groupBoxFilted(nullptr)//groupBoxFilted
 {
 	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
 	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1);
-
-	/*for (int i = 0; i < infos.size(); i++)
-	{
-		if (infos[i].SessionName == std::wstring(L"TraceTest"))
-		{
-			ETWLib::ETWSession attachedSession(infos[i].TraceHandle);
-			attachedSession.CloseSession();
-		}
-	}*/
-
 	timer = new QTimer(this);
 	groupBoxSelectedFilterAll = new QGroupBox(tr("searching result after filter"));
 	groupBoxSelectedFilterAll->setFlat(true);
@@ -51,17 +41,6 @@ groupBoxFilted(NULL)//groupBoxFilted
 	this->setWindowTitle(tr("Test Version"));
 	filePath = (QCoreApplication::applicationDirPath()).toStdWString() + L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
 	this->resize(850, 490);
-
-	//FOR FILTER
-	//filterLeftProvidersScroll = new QScrollArea;
-	//filterLeftLayOut = new QVBoxLayout;
-	//filterLeftBox = new QGroupBox;
-
-	//scrollAreaFilted = new QScrollArea;
-	//vBoxLayOutFilted = new QVBoxLayout;//vBoxLayOutFilted
-	//groupBoxFilted = new QGroupBox(tr("Searching result"));//groupBoxFilted
-
-
 }
 
 QPushButton* Test::CreatStartButton()
@@ -141,7 +120,7 @@ QLineEdit* Test::CreatFilterLineEdit()
 
 void Test::HandleStart()
 {
-	if (session == NULL)
+	if (session == nullptr)
 	{
 		QMessageBox::information(this, tr("Hint"), tr("Set path first"));
 		return;
@@ -149,10 +128,13 @@ void Test::HandleStart()
 	param->EnableProfilling(true);
 	session->SetParameters(*param);
 	ULONG status = session->StartSession(ETWLib::LogFileMode);
+
 	std::vector<ETWLib::SessionInfo> infosUpdate; 
 	ETWLib::QueryAllSessions(infosUpdate);
 	infos = infosUpdate;
+
 	start->setEnabled(false);
+
 	end->setEnabled(true);
 	if (status == 1)
 	{
@@ -163,20 +145,16 @@ void Test::HandleStart()
 void Test::HandleEnd()
 {
 	session->CloseSession();
-	delete session;
-	delete param;
-	session = NULL;
-	param = NULL;
 	start->setEnabled(true);
 	end->setEnabled(false);
 }
 
 void Test::HandleFilter()
 {
-	if (selectFiltedAll != NULL)
+	if (selectFiltedAll != nullptr)
 	{
 		delete selectFiltedAll;
-		selectFiltedAll = NULL;
+		selectFiltedAll = nullptr;
 	}
 
 	scrollAreaAllProvider->hide();
@@ -226,6 +204,7 @@ void Test::HandleSave()
 	std::vector<ETWLib::SessionInfo> infosUpdate;
 	ETWLib::QueryAllSessions(infosUpdate);
 	infos = infosUpdate;
+
 	for (int i = 0; i < infos.size(); i++)
 	{
 		if (infos[i].SessionName == std::wstring(L"TraceTest"))
@@ -244,18 +223,15 @@ void Test::HandleSave()
 	filePath = fileName.toStdWString();
 	QObject* sender = QObject::sender();
 	((QPushButton*)sender)->setText(fileName);
-	if (session == NULL) //Make sure there is only one instance exist
-	{
-		session = new ETWLib::ETWSession(L"TraceTest", filePath);
-		param = new ETWLib::SessionParameters;
-	}
+	session = std::make_unique<ETWLib::ETWSession>(L"TraceTest", filePath);
+	param = std::make_unique<ETWLib::SessionParameters>();
 	start->setEnabled(true);
 }
 
 void Test::CheckBoxClicked(int state)
 {
 	QObject* sender = QObject::sender();
-	if (param == NULL)
+	if (param == nullptr)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Set path first"));
 		((QCheckBox*)sender)->setChecked(false);
