@@ -54,7 +54,6 @@ private:
 	QLineEdit *CreatFilterLineEdit();
 	QCheckBox *selcetAll;
 	QCheckBox *selectFiltedAll;
-	//QScrollArea *scrollAreaFilted;
 	QScrollArea* filterLeftProvidersScroll;
 	QScrollArea* scrollAreaFilterLeft;
 	QScrollArea *scrollAreaAllProvider;
@@ -63,7 +62,6 @@ private:
 	QVBoxLayout *vBoxAllProviders;
 	QVBoxLayout *vBoxLayOutFilted;
 	QVBoxLayout* filterLeftLayOut;
-	//QVBoxLayout *selectedFilterAllLayOut;
 	QGroupBox* filterLeftBox;
 	QGroupBox* groupBoxFilted;
 	QGroupBox* groupBoxSelectedFilterAll;
@@ -78,7 +76,6 @@ private:
 	QTextEdit* textShowSelectedProviders;
 	std::unique_ptr<ETWLib::ETWSession> session;
 	std::unique_ptr<ETWLib::SessionParameters> param;
-	//ETWLib::SessionParameters* param;
 	std::vector<QCheckBox*> vecAllProviders;//1079
 	std::vector<QCheckBox*> vecAllFilterProviders;
 	std::set<std::wstring> SelectedProviders;

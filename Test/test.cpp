@@ -1,4 +1,5 @@
 #include "test.h"
+#include<stdio.h>
 #include <iostream>
 #include <Qtcore/QCoreApplication>
 
@@ -86,7 +87,6 @@ QCheckBox* Test::CreatShowSelectedProvidersBox()
 	showSelectedProviders->setCheckable(true);
 	showSelectedProviders->setChecked(false);
 	connect(showSelectedProviders, SIGNAL(stateChanged(int)), this, SLOT(Timer(int)));
-	//showSelectedProviders->setFixedSize(300, 20);
 	return showSelectedProviders;
 }
 
@@ -113,7 +113,6 @@ QLineEdit* Test::CreatFilterLineEdit()
 {
 	filter = new QLineEdit;
 	filter->setPlaceholderText("Search here!");
-	//filter->setFixedSize(300, 20);
 	connect(filter, SIGNAL(textEdited(const QString)), this, SLOT(HandleFilter()));
 	return filter;
 }
@@ -136,7 +135,7 @@ void Test::HandleStart()
 	start->setEnabled(false);
 
 	end->setEnabled(true);
-	if (status == 1)
+	if (status == 0)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Start failed"));
 	}
@@ -147,7 +146,15 @@ void Test::HandleEnd()
 	session->CloseSession();
 	start->setEnabled(true);
 	end->setEnabled(false);
+	std::string strFilePath(filePath.begin(), filePath.end());
+	std::string commond = "xperf -merge " + strFilePath + " final.etl";
+	FILE* fh = fopen(strFilePath.c_str(), "r");
+	if (fh != NULL)
+	{
+		system(commond.c_str());
+	}
 }
+
 
 void Test::HandleFilter()
 {
@@ -255,20 +262,19 @@ void Test::CheckBoxClicked(int state)
 
 void Test::SeclectAllProviders(int state)
 {
-	QObject* sender = QObject::sender();
-	std::wstring wstr = ((QCheckBox*)sender)->text().toStdWString();
+	int cntAllProviders = vecAllProviders.size();
 	if (param)
 	{
 		if (state == Qt::Checked)
 		{
-			for (int i = 0; i < vecAllProviders.size(); ++i)
+			for (int i = 0; i < cntAllProviders; ++i)
 			{
 				vecAllProviders[i]->setCheckState(Qt::Checked);
 			}
 		}
 		else
 		{
-			for (int i = 0; i < vecAllProviders.size(); ++i)
+			for (int i = 0; i < cntAllProviders; ++i)
 			{
 				vecAllProviders[i]->setCheckState(Qt::Unchecked);
 			}
