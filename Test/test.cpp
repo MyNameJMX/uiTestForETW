@@ -147,11 +147,11 @@ void Test::HandleEnd()
 	start->setEnabled(true);
 	end->setEnabled(false);
 	std::string strFilePath(filePath.begin(), filePath.end());
-	std::string commond = "xperf -merge " + strFilePath + " final.etl";
-	FILE* fh = fopen(strFilePath.c_str(), "r");
-	if (fh != NULL)
+	std::string commondToPath = "xperf -merge temp.etl " + strFilePath;
+	QFile file(QString("temp.etl"));
+	if (file.exists())
 	{
-		system(commond.c_str());
+		system(commondToPath.c_str());
 	}
 }
 
@@ -230,7 +230,7 @@ void Test::HandleSave()
 	filePath = fileName.toStdWString();
 	QObject* sender = QObject::sender();
 	((QPushButton*)sender)->setText(fileName);
-	session = std::make_unique<ETWLib::ETWSession>(L"TraceTest", filePath);
+	session = std::make_unique<ETWLib::ETWSession>(L"TraceTest", L"temp.etl");
 	param = std::make_unique<ETWLib::SessionParameters>();
 	start->setEnabled(true);
 }
