@@ -1,9 +1,11 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include <ProcessNameAndPID.h>
 #include <set>
 #include <memory>
 #include <etwlib.h>
+#include <qtablewidget.h>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QGroupBox>
@@ -35,23 +37,29 @@ public:
 	void HandleStart();
 	void HandleEnd();
 	void HandleFilter();
+	void HandleTable(int);
 	void CheckBoxClicked(int state);
+	void ProcessCheckBoxClicked(int state);
 	void SeclectAllProviders(int state);
 	void SeclectAllFiltedProviders(int state);
 	void ShowSeclectedProviders();
 	void Timer(int);
 private:
+	ProcessNameAndPID *processNameAndPID;
 	QTimer* timer;
 	std::vector<ETWLib::SessionInfo> infos;
 	std::vector<std::wstring> allProvidersName;
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();
 	QPushButton* CreatSavePathButton();
+	QCheckBox* CreatShowProcessNameAndPIDBox();
 	QCheckBox *selectFilterAll;
 	QCheckBox *CreatSelectAllCheckBox();
 	QCheckBox *CreatShowSelectedProvidersBox();
 	QGroupBox *CreatProvidesGroupBox();
+	QGroupBox* CreatSelectProcessBox();
 	QLineEdit *CreatFilterLineEdit();
+	QTableWidget* CreatTable();
 	QCheckBox *selcetAll;
 	QCheckBox *selectFiltedAll;
 	QScrollArea* filterLeftProvidersScroll;
@@ -59,9 +67,12 @@ private:
 	QScrollArea *scrollAreaAllProvider;
 	QScrollArea *scrollAreaSelectedProviders;
 	QScrollArea *scrollAreaFilted;
+	QScrollArea *scrollAreaAllProcess;
 	QVBoxLayout *vBoxAllProviders;
 	QVBoxLayout *vBoxLayOutFilted;
 	QVBoxLayout* filterLeftLayOut;
+	QVBoxLayout* vBoxAllProcess;
+	QGroupBox* allProcesses;
 	QGroupBox* filterLeftBox;
 	QGroupBox* groupBoxFilted;
 	QGroupBox* groupBoxSelectedFilterAll;
@@ -72,14 +83,17 @@ private:
 	QPushButton* start;
 	QPushButton* end;
 	QPushButton* save;
+	QCheckBox* showProcessNameAndPID;
 	QCheckBox* showSelectedProviders;
 	QTextEdit* textShowSelectedProviders;
+	QTableWidget* nameAndPIDTable;
 	std::unique_ptr<ETWLib::ETWSession> session;
 	std::unique_ptr<ETWLib::SessionParameters> param;
 	std::vector<QCheckBox*> vecAllProviders;//1079
 	std::vector<QCheckBox*> vecAllFilterProviders;
 	std::set<std::wstring> SelectedProviders;
 	std::wstring filePath;
+	std::map<std::string, DWORD> processNameAndPIDMap;
 	//Ui::TestClass ui;
 };
 

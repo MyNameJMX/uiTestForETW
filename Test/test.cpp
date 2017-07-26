@@ -28,6 +28,13 @@ groupBoxFilted(nullptr)//groupBoxFilted
 	grid->addLayout(gridCom, 0, 0);
 	grid->addWidget(CreatFilterLineEdit(), 0, 1);
 	grid->addWidget(CreatShowSelectedProvidersBox(), 0, 2);
+	grid->addWidget(CreatShowProcessNameAndPIDBox(), 0, 3);
+	QGridLayout *gridTable = new QGridLayout;
+	gridTable->addWidget(CreatTable(), 0, 1); 
+	scrollAreaAllProcess = new QScrollArea;
+	scrollAreaAllProcess->setWidget(CreatSelectProcessBox());
+	gridTable->addWidget(scrollAreaAllProcess, 0, 2);
+	grid->addLayout(gridTable, 1, 3);
 	scrollAreaAllProvider = new QScrollArea;
 	scrollAreaAllProvider->setWidget(CreatProvidesGroupBox());
 	grid->addWidget(scrollAreaAllProvider, 1, 0);
@@ -36,12 +43,14 @@ groupBoxFilted(nullptr)//groupBoxFilted
 	grid->setColumnStretch(0, 1);
 	grid->setColumnStretch(1, 1);
 	grid->setColumnStretch(2, 1);
+	grid->setColumnStretch(3, 1);
 	grid->setRowStretch(0, 1);
 	grid->setRowStretch(1, 1);
 	this->setLayout(grid);
 	this->setWindowTitle(tr("Test Version"));
 	filePath = (QCoreApplication::applicationDirPath()).toStdWString() + L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
 	this->resize(850, 490);
+
 }
 
 QPushButton* Test::CreatStartButton()
@@ -117,6 +126,60 @@ QLineEdit* Test::CreatFilterLineEdit()
 	return filter;
 }
 
+QCheckBox* Test::CreatShowProcessNameAndPIDBox() 
+{
+	showProcessNameAndPID = new QCheckBox(tr("ShowProcessNameAndPID"));
+	connect(showProcessNameAndPID, SIGNAL(stateChanged(int)), this, SLOT(HandleTable(int)));
+	return showProcessNameAndPID;
+}
+
+QTableWidget* Test::CreatTable() 
+{
+	ProcessNameAndPID processNameAndPID;
+	processNameAndPIDMap = processNameAndPID.GetProcessNameAndPID();
+	nameAndPIDTable = new QTableWidget(processNameAndPIDMap.size() + 1, 2, this);
+	int row = 0,col = 0 ;
+	for (auto itor = processNameAndPIDMap.begin(); itor != processNameAndPIDMap.end(); ++itor) 
+	{
+		QTableWidgetItem *processName = new QTableWidgetItem(QString::fromStdString(itor->first));
+		nameAndPIDTable->setItem(row, 0, processName);
+		QTableWidgetItem *PID = new QTableWidgetItem(QString::fromStdString(std::to_string(itor->second)));
+		nameAndPIDTable->setItem(col, 1, PID);
+		++row;
+		++col;
+	}
+	return nameAndPIDTable;
+}
+
+QGroupBox* Test::CreatSelectProcessBox() 
+{
+	allProcesses = new QGroupBox(tr("All Processes"));
+	allProcesses->setFlat(true);
+	vBoxAllProcess = new QVBoxLayout;
+	for (auto itor = processNameAndPIDMap.begin(); itor != processNameAndPIDMap.end(); itor++)
+	{
+		const QString qprovider_str = QString::fromStdString(itor->first);
+		QCheckBox *checkBoxProcess = new QCheckBox(qprovider_str);
+		checkBoxProcess->setCheckState(Qt::Unchecked);
+		connect(checkBoxProcess, SIGNAL(stateChanged(int)), this, SLOT(ProcessCheckBoxClicked(int)));
+		vBoxAllProcess->addWidget(checkBoxProcess);
+	}
+	vBoxAllProcess->addStretch(1);
+	allProcesses->setLayout(vBoxAllProcess);
+	return allProcesses;
+}
+void Test::HandleTable(int state) 
+{
+	QObject* sender = QObject::sender();
+	if (state == Qt::Checked) 
+	{
+		nameAndPIDTable->show();
+	}
+	else 
+	{
+		nameAndPIDTable->hide();
+	}
+}
 void Test::HandleStart()
 {
 	if (session == nullptr)
@@ -260,6 +323,10 @@ void Test::CheckBoxClicked(int state)
 	}
 }
 
+void Test::ProcessCheckBoxClicked(int state) 
+{
+	//All Processes slots
+}
 void Test::SeclectAllProviders(int state)
 {
 	int cntAllProviders = vecAllProviders.size();
