@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Test_t {
-    QByteArrayData data[16];
-    char stringdata0[215];
+    QByteArrayData data[19];
+    char stringdata0[245];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -44,7 +44,10 @@ QT_MOC_LITERAL(11, 136, 3), // "row"
 QT_MOC_LITERAL(12, 140, 19), // "SeclectAllProviders"
 QT_MOC_LITERAL(13, 160, 25), // "SeclectAllFiltedProviders"
 QT_MOC_LITERAL(14, 186, 22), // "ShowSeclectedProviders"
-QT_MOC_LITERAL(15, 209, 5) // "Timer"
+QT_MOC_LITERAL(15, 209, 5), // "Timer"
+QT_MOC_LITERAL(16, 215, 10), // "closeEvent"
+QT_MOC_LITERAL(17, 226, 12), // "QCloseEvent*"
+QT_MOC_LITERAL(18, 239, 5) // "event"
 
     },
     "Test\0ProcessTableDoubleClicked\0\0"
@@ -52,7 +55,8 @@ QT_MOC_LITERAL(15, 209, 5) // "Timer"
     "HandleFilter\0HandleTable\0CheckBoxClicked\0"
     "state\0ProcessTableItemClicked\0row\0"
     "SeclectAllProviders\0SeclectAllFiltedProviders\0"
-    "ShowSeclectedProviders\0Timer"
+    "ShowSeclectedProviders\0Timer\0closeEvent\0"
+    "QCloseEvent*\0event"
 };
 #undef QT_MOC_LITERAL
 
@@ -62,7 +66,7 @@ static const uint qt_meta_data_Test[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -70,18 +74,19 @@ static const uint qt_meta_data_Test[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   74,    2, 0x08 /* Private */,
-       3,    0,   75,    2, 0x08 /* Private */,
-       4,    0,   76,    2, 0x08 /* Private */,
-       5,    0,   77,    2, 0x08 /* Private */,
-       6,    0,   78,    2, 0x08 /* Private */,
-       7,    1,   79,    2, 0x08 /* Private */,
-       8,    1,   82,    2, 0x08 /* Private */,
-      10,    1,   85,    2, 0x08 /* Private */,
-      12,    1,   88,    2, 0x08 /* Private */,
-      13,    1,   91,    2, 0x08 /* Private */,
-      14,    0,   94,    2, 0x08 /* Private */,
-      15,    1,   95,    2, 0x08 /* Private */,
+       1,    0,   79,    2, 0x08 /* Private */,
+       3,    0,   80,    2, 0x08 /* Private */,
+       4,    0,   81,    2, 0x08 /* Private */,
+       5,    0,   82,    2, 0x08 /* Private */,
+       6,    0,   83,    2, 0x08 /* Private */,
+       7,    1,   84,    2, 0x08 /* Private */,
+       8,    1,   87,    2, 0x08 /* Private */,
+      10,    1,   90,    2, 0x08 /* Private */,
+      12,    1,   93,    2, 0x08 /* Private */,
+      13,    1,   96,    2, 0x08 /* Private */,
+      14,    0,   99,    2, 0x08 /* Private */,
+      15,    1,  100,    2, 0x08 /* Private */,
+      16,    1,  103,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -96,6 +101,7 @@ static const uint qt_meta_data_Test[] = {
     QMetaType::Void, QMetaType::Int,    9,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    2,
+    QMetaType::Void, 0x80000000 | 17,   18,
 
        0        // eod
 };
@@ -118,6 +124,7 @@ void Test::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 9: _t->SeclectAllFiltedProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 10: _t->ShowSeclectedProviders(); break;
         case 11: _t->Timer((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: _t->closeEvent((*reinterpret_cast< QCloseEvent*(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -148,13 +155,13 @@ int Test::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 13)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 12;
+        _id -= 13;
     }
     return _id;
 }

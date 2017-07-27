@@ -46,6 +46,7 @@ public:
 	void SeclectAllFiltedProviders(int state);
 	void ShowSeclectedProviders();
 	void Timer(int);
+	void closeEvent(QCloseEvent *event);
 private:
 	ProcessNameAndPID *processNameAndPID;
 	QTimer* timer;

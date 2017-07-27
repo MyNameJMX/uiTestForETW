@@ -40,3 +40,7 @@ x64/Debug/
 *.lastbuildstate
 
 ETWLib
+
+Test/1\.etl
+
+*.etl
