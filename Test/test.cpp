@@ -11,7 +11,9 @@ filterLeftLayOut(nullptr),
 filterLeftBox(nullptr),
 scrollAreaFilted(nullptr),
 vBoxLayOutFilted(nullptr),//vBoxLayOutFilted
-groupBoxFilted(nullptr)//groupBoxFilted
+groupBoxFilted(nullptr),//groupBoxFilted
+selectedProcessID(0),//initial ProcessID nullptr
+selectedProcessName()
 {
 	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
 	bool tokenValid = ETWLib::GrantPrivilegeW(privilege, 1);
@@ -25,21 +27,16 @@ groupBoxFilted(nullptr)//groupBoxFilted
 	gridCom->addWidget(CreatEndButton(), 0, 1);
 	gridCom->addWidget(CreatSavePathButton(), 0, 2);
 	gridCom->addWidget(CreatSelectAllCheckBox(), 0, 3);
-	grid->addLayout(gridCom, 0, 0);
-	grid->addWidget(CreatFilterLineEdit(), 0, 1);
-	grid->addWidget(CreatShowSelectedProvidersBox(), 0, 2);
-	grid->addWidget(CreatShowProcessNameAndPIDBox(), 0, 3);
-	QGridLayout *gridTable = new QGridLayout;
-	gridTable->addWidget(CreatTable(), 0, 1); 
-	scrollAreaAllProcess = new QScrollArea;
-	scrollAreaAllProcess->setWidget(CreatSelectProcessBox());
-	gridTable->addWidget(scrollAreaAllProcess, 0, 2);
-	grid->addLayout(gridTable, 1, 3);
+	grid->addLayout(gridCom, 0, 1);
+	grid->addWidget(CreatFilterLineEdit(), 0, 2);
+	grid->addWidget(CreatShowSelectedProvidersBox(), 0, 3);
+	grid->addWidget(CreatShowProcessNameAndPIDBox(), 0, 0);
+	grid->addWidget(CreatTable(), 1, 0);
 	scrollAreaAllProvider = new QScrollArea;
 	scrollAreaAllProvider->setWidget(CreatProvidesGroupBox());
-	grid->addWidget(scrollAreaAllProvider, 1, 0);
+	grid->addWidget(scrollAreaAllProvider, 1, 1);
 	textShowSelectedProviders = new QTextEdit;
-	grid->addWidget(textShowSelectedProviders, 1, 2);
+	grid->addWidget(textShowSelectedProviders, 1, 3);
 	grid->setColumnStretch(0, 1);
 	grid->setColumnStretch(1, 1);
 	grid->setColumnStretch(2, 1);
@@ -82,12 +79,12 @@ QPushButton* Test::CreatSavePathButton()
 
 QCheckBox* Test::CreatSelectAllCheckBox()
 {
-	selcetAll = new QCheckBox(tr("SelectAll"));
-	selcetAll->isEnabled();
-	selcetAll->setCheckable(true);
-	selcetAll->setChecked(false);
-	connect(selcetAll, SIGNAL(stateChanged(int)), this, SLOT(SeclectAllProviders(int)));
-	return selcetAll;
+	selectAll = new QCheckBox(tr("SelectAll"));
+	selectAll->isEnabled();
+	selectAll->setCheckable(true);
+	selectAll->setChecked(false);
+	connect(selectAll, SIGNAL(stateChanged(int)), this, SLOT(SeclectAllProviders(int)));
+	return selectAll;
 }
 
 QCheckBox* Test::CreatShowSelectedProvidersBox()
@@ -137,37 +134,29 @@ QTableWidget* Test::CreatTable()
 {
 	ProcessNameAndPID processNameAndPID;
 	processNameAndPIDMap = processNameAndPID.GetProcessNameAndPID();
-	nameAndPIDTable = new QTableWidget(processNameAndPIDMap.size() + 1, 2, this);
+	nameAndPIDTable = new QTableWidget(processNameAndPIDMap.size(), 2, this);
+	nameAndPIDTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	nameAndPIDTable->setSelectionMode(QAbstractItemView::MultiSelection); 
+	nameAndPIDTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+	nameAndPIDTable->setColumnWidth(0,200);
+	nameAndPIDTable->setColumnWidth(1,200);
+
 	int row = 0,col = 0 ;
 	for (auto itor = processNameAndPIDMap.begin(); itor != processNameAndPIDMap.end(); ++itor) 
 	{
 		QTableWidgetItem *processName = new QTableWidgetItem(QString::fromStdString(itor->first));
 		nameAndPIDTable->setItem(row, 0, processName);
+		
 		QTableWidgetItem *PID = new QTableWidgetItem(QString::fromStdString(std::to_string(itor->second)));
 		nameAndPIDTable->setItem(col, 1, PID);
 		++row;
 		++col;
 	}
+	connect(nameAndPIDTable, SIGNAL(cellClicked(int,int)), this, SLOT(ProcessTableItemClicked(int)));
+	connect(nameAndPIDTable, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(ProcessTableDoubleClicked()));
 	return nameAndPIDTable;
 }
 
-QGroupBox* Test::CreatSelectProcessBox() 
-{
-	allProcesses = new QGroupBox(tr("All Processes"));
-	allProcesses->setFlat(true);
-	vBoxAllProcess = new QVBoxLayout;
-	for (auto itor = processNameAndPIDMap.begin(); itor != processNameAndPIDMap.end(); itor++)
-	{
-		const QString qprovider_str = QString::fromStdString(itor->first);
-		QCheckBox *checkBoxProcess = new QCheckBox(qprovider_str);
-		checkBoxProcess->setCheckState(Qt::Unchecked);
-		connect(checkBoxProcess, SIGNAL(stateChanged(int)), this, SLOT(ProcessCheckBoxClicked(int)));
-		vBoxAllProcess->addWidget(checkBoxProcess);
-	}
-	vBoxAllProcess->addStretch(1);
-	allProcesses->setLayout(vBoxAllProcess);
-	return allProcesses;
-}
 void Test::HandleTable(int state) 
 {
 	QObject* sender = QObject::sender();
@@ -187,6 +176,10 @@ void Test::HandleStart()
 		QMessageBox::information(this, tr("Hint"), tr("Set path first"));
 		return;
 	}
+	for (auto itor = SelectedProviders.begin(); itor != SelectedProviders.end(); ++itor)
+	{
+		param->AddUserModeProvider(*itor, true, ETWLib::LevelVerbose, selectedProcessID.data(), selectedProcessID.size());
+	}
 	param->EnableProfilling(true);
 	session->SetParameters(*param);
 	ULONG status = session->StartSession(ETWLib::LogFileMode);
@@ -194,14 +187,13 @@ void Test::HandleStart()
 	std::vector<ETWLib::SessionInfo> infosUpdate; 
 	ETWLib::QueryAllSessions(infosUpdate);
 	infos = infosUpdate;
-
-	start->setEnabled(false);
-
-	end->setEnabled(true);
 	if (status == 0)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Start failed"));
+		return;
 	}
+	start->setEnabled(false);
+	end->setEnabled(true);
 }
 
 void Test::HandleEnd()
@@ -261,12 +253,12 @@ void Test::HandleFilter()
 
 	groupBoxFilted->setLayout(vBoxLayOutFilted);
 	scrollAreaFilted->setWidget(groupBoxFilted);
-	grid->addWidget(scrollAreaFilted, 1, 1);
+	grid->addWidget(scrollAreaFilted, 1, 2);
 
 
 	filterLeftBox->setLayout(filterLeftLayOut);
 	filterLeftProvidersScroll->setWidget(filterLeftBox);
-	grid->addWidget(filterLeftProvidersScroll, 1, 0);
+	grid->addWidget(filterLeftProvidersScroll, 1, 1);
 }
 
 void Test::HandleSave()
@@ -300,32 +292,85 @@ void Test::HandleSave()
 
 void Test::CheckBoxClicked(int state)
 {
+	
 	QObject* sender = QObject::sender();
+	if (selectedProcessID.size() == 0) 
+	{
+		QMessageBox::information(this, tr("Error"), tr("Set Process first"));
+		((QCheckBox*)sender)->setChecked(false);
+		return;
+	}
 	if (param == nullptr)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Set path first"));
 		((QCheckBox*)sender)->setChecked(false);
 		return;
 	}
-
 	std::wstring wstr = ((QCheckBox*)sender)->text().toStdWString();
 
 	if (state == Qt::Checked)
 	{
 		SelectedProviders.insert(wstr);
-		param->AddUserModeProvider(wstr, true);
 	}
 	else
 	{
 		auto itor = SelectedProviders.find(wstr);
 		SelectedProviders.erase(itor);
-		param->EraseUserModeProvider(wstr);
 	}
 }
 
-void Test::ProcessCheckBoxClicked(int state) 
+void Test::ProcessTableDoubleClicked() 
+{
+	QObject* sender = QObject::sender();
+	int rowCnt = ((QTableWidget*)sender)->rowCount();
+	int colCnt = ((QTableWidget*)sender)->columnCount();
+	for (int i = 1; i < rowCnt; ++i) 
+	{
+		((QTableWidget*)sender)->item(i, 0)->setSelected(false);
+		((QTableWidget*)sender)->item(i, 1)->setSelected(false);
+	}
+	selectedProcessID.clear();
+}
+void Test::ProcessTableItemClicked(int row) 
 {
 	//All Processes slots
+	if (param == nullptr)
+	{
+		QMessageBox::information(this, tr("Error"), tr("Set path first"));
+		return;
+	}
+	bool ok = true;
+	//selectedProcessName = nameAndPIDTable->item(row, 0)->text();
+	auto tableItem = nameAndPIDTable->item(row, 0);
+	DWORD pid;
+ 	if (tableItem != nullptr)
+ 	{
+ 		selectedProcessName = tableItem->text();
+ 	}
+	tableItem = nameAndPIDTable->item(row, 1);
+	if (tableItem != nullptr)
+	{
+		pid = tableItem->text().toULong(&ok, 10);
+	}
+	auto itor = selectedProcessID.begin();
+	bool add = 1;//0 means no add
+	while (itor != selectedProcessID.end()) 
+	{
+		if (*itor == pid)
+		{
+			add = 0;
+			break;
+		}
+		++itor;
+	}
+	if (add == 1) 
+	{
+		selectedProcessID.push_back(pid);
+	}
+	else 
+	{
+		selectedProcessID.erase(itor);
+	}
 }
 void Test::SeclectAllProviders(int state)
 {
@@ -347,9 +392,13 @@ void Test::SeclectAllProviders(int state)
 			}
 		}
 	} 
-	else
+	else if(!param)
 	{
 		QMessageBox::information(this, tr("Error"), tr("Set path first"));
+	}
+	else 
+	{
+		QMessageBox::information(this, tr("Error"), tr("Set process first"));
 	}
 }
 

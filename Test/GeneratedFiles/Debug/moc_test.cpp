@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Test_t {
-    QByteArrayData data[14];
-    char stringdata0[184];
+    QByteArrayData data[16];
+    char stringdata0[215];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,24 +30,27 @@ struct qt_meta_stringdata_Test_t {
 static const qt_meta_stringdata_Test_t qt_meta_stringdata_Test = {
     {
 QT_MOC_LITERAL(0, 0, 4), // "Test"
-QT_MOC_LITERAL(1, 5, 10), // "HandleSave"
-QT_MOC_LITERAL(2, 16, 0), // ""
-QT_MOC_LITERAL(3, 17, 11), // "HandleStart"
-QT_MOC_LITERAL(4, 29, 9), // "HandleEnd"
-QT_MOC_LITERAL(5, 39, 12), // "HandleFilter"
-QT_MOC_LITERAL(6, 52, 11), // "HandleTable"
-QT_MOC_LITERAL(7, 64, 15), // "CheckBoxClicked"
-QT_MOC_LITERAL(8, 80, 5), // "state"
-QT_MOC_LITERAL(9, 86, 22), // "ProcessCheckBoxClicked"
-QT_MOC_LITERAL(10, 109, 19), // "SeclectAllProviders"
-QT_MOC_LITERAL(11, 129, 25), // "SeclectAllFiltedProviders"
-QT_MOC_LITERAL(12, 155, 22), // "ShowSeclectedProviders"
-QT_MOC_LITERAL(13, 178, 5) // "Timer"
+QT_MOC_LITERAL(1, 5, 25), // "ProcessTableDoubleClicked"
+QT_MOC_LITERAL(2, 31, 0), // ""
+QT_MOC_LITERAL(3, 32, 10), // "HandleSave"
+QT_MOC_LITERAL(4, 43, 11), // "HandleStart"
+QT_MOC_LITERAL(5, 55, 9), // "HandleEnd"
+QT_MOC_LITERAL(6, 65, 12), // "HandleFilter"
+QT_MOC_LITERAL(7, 78, 11), // "HandleTable"
+QT_MOC_LITERAL(8, 90, 15), // "CheckBoxClicked"
+QT_MOC_LITERAL(9, 106, 5), // "state"
+QT_MOC_LITERAL(10, 112, 23), // "ProcessTableItemClicked"
+QT_MOC_LITERAL(11, 136, 3), // "row"
+QT_MOC_LITERAL(12, 140, 19), // "SeclectAllProviders"
+QT_MOC_LITERAL(13, 160, 25), // "SeclectAllFiltedProviders"
+QT_MOC_LITERAL(14, 186, 22), // "ShowSeclectedProviders"
+QT_MOC_LITERAL(15, 209, 5) // "Timer"
 
     },
-    "Test\0HandleSave\0\0HandleStart\0HandleEnd\0"
+    "Test\0ProcessTableDoubleClicked\0\0"
+    "HandleSave\0HandleStart\0HandleEnd\0"
     "HandleFilter\0HandleTable\0CheckBoxClicked\0"
-    "state\0ProcessCheckBoxClicked\0"
+    "state\0ProcessTableItemClicked\0row\0"
     "SeclectAllProviders\0SeclectAllFiltedProviders\0"
     "ShowSeclectedProviders\0Timer"
 };
@@ -59,7 +62,7 @@ static const uint qt_meta_data_Test[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      11,   14, // methods
+      12,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,28 +70,30 @@ static const uint qt_meta_data_Test[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   69,    2, 0x08 /* Private */,
-       3,    0,   70,    2, 0x08 /* Private */,
-       4,    0,   71,    2, 0x08 /* Private */,
-       5,    0,   72,    2, 0x08 /* Private */,
-       6,    1,   73,    2, 0x08 /* Private */,
-       7,    1,   76,    2, 0x08 /* Private */,
-       9,    1,   79,    2, 0x08 /* Private */,
-      10,    1,   82,    2, 0x08 /* Private */,
-      11,    1,   85,    2, 0x08 /* Private */,
-      12,    0,   88,    2, 0x08 /* Private */,
-      13,    1,   89,    2, 0x08 /* Private */,
+       1,    0,   74,    2, 0x08 /* Private */,
+       3,    0,   75,    2, 0x08 /* Private */,
+       4,    0,   76,    2, 0x08 /* Private */,
+       5,    0,   77,    2, 0x08 /* Private */,
+       6,    0,   78,    2, 0x08 /* Private */,
+       7,    1,   79,    2, 0x08 /* Private */,
+       8,    1,   82,    2, 0x08 /* Private */,
+      10,    1,   85,    2, 0x08 /* Private */,
+      12,    1,   88,    2, 0x08 /* Private */,
+      13,    1,   91,    2, 0x08 /* Private */,
+      14,    0,   94,    2, 0x08 /* Private */,
+      15,    1,   95,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    2,
-    QMetaType::Void, QMetaType::Int,    8,
-    QMetaType::Void, QMetaType::Int,    8,
-    QMetaType::Void, QMetaType::Int,    8,
-    QMetaType::Void, QMetaType::Int,    8,
+    QMetaType::Void, QMetaType::Int,    9,
+    QMetaType::Void, QMetaType::Int,   11,
+    QMetaType::Void, QMetaType::Int,    9,
+    QMetaType::Void, QMetaType::Int,    9,
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    2,
 
@@ -101,17 +106,18 @@ void Test::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         Test *_t = static_cast<Test *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->HandleSave(); break;
-        case 1: _t->HandleStart(); break;
-        case 2: _t->HandleEnd(); break;
-        case 3: _t->HandleFilter(); break;
-        case 4: _t->HandleTable((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: _t->CheckBoxClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 6: _t->ProcessCheckBoxClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 7: _t->SeclectAllProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 8: _t->SeclectAllFiltedProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 9: _t->ShowSeclectedProviders(); break;
-        case 10: _t->Timer((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 0: _t->ProcessTableDoubleClicked(); break;
+        case 1: _t->HandleSave(); break;
+        case 2: _t->HandleStart(); break;
+        case 3: _t->HandleEnd(); break;
+        case 4: _t->HandleFilter(); break;
+        case 5: _t->HandleTable((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: _t->CheckBoxClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 7: _t->ProcessTableItemClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 8: _t->SeclectAllProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->SeclectAllFiltedProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 10: _t->ShowSeclectedProviders(); break;
+        case 11: _t->Timer((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -142,13 +148,13 @@ int Test::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 11)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 11;
+        _id -= 12;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 11)
+        if (_id < 12)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 11;
+        _id -= 12;
     }
     return _id;
 }

@@ -6,6 +6,7 @@
 #include <memory>
 #include <etwlib.h>
 #include <qtablewidget.h>
+#include <QWidgetItem>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QGroupBox>
@@ -33,13 +34,14 @@ class Test : public QWidget
 public:
 	Test(QWidget *parent = 0);
 	private slots:
+	void ProcessTableDoubleClicked();
 	void HandleSave();
 	void HandleStart();
 	void HandleEnd();
 	void HandleFilter();
 	void HandleTable(int);
 	void CheckBoxClicked(int state);
-	void ProcessCheckBoxClicked(int state);
+	void ProcessTableItemClicked(int row);
 	void SeclectAllProviders(int state);
 	void SeclectAllFiltedProviders(int state);
 	void ShowSeclectedProviders();
@@ -57,21 +59,18 @@ private:
 	QCheckBox *CreatSelectAllCheckBox();
 	QCheckBox *CreatShowSelectedProvidersBox();
 	QGroupBox *CreatProvidesGroupBox();
-	QGroupBox* CreatSelectProcessBox();
 	QLineEdit *CreatFilterLineEdit();
 	QTableWidget* CreatTable();
-	QCheckBox *selcetAll;
+	QCheckBox *selectAll;
 	QCheckBox *selectFiltedAll;
 	QScrollArea* filterLeftProvidersScroll;
 	QScrollArea* scrollAreaFilterLeft;
 	QScrollArea *scrollAreaAllProvider;
 	QScrollArea *scrollAreaSelectedProviders;
 	QScrollArea *scrollAreaFilted;
-	QScrollArea *scrollAreaAllProcess;
 	QVBoxLayout *vBoxAllProviders;
 	QVBoxLayout *vBoxLayOutFilted;
 	QVBoxLayout* filterLeftLayOut;
-	QVBoxLayout* vBoxAllProcess;
 	QGroupBox* allProcesses;
 	QGroupBox* filterLeftBox;
 	QGroupBox* groupBoxFilted;
@@ -94,6 +93,8 @@ private:
 	std::set<std::wstring> SelectedProviders;
 	std::wstring filePath;
 	std::map<std::string, DWORD> processNameAndPIDMap;
+	std::vector<DWORD> selectedProcessID;
+	QString selectedProcessName;
 	//Ui::TestClass ui;
 };
 
