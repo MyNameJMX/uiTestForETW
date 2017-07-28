@@ -39,7 +39,7 @@ public:
 	void HandleStart();
 	void HandleEnd();
 	void HandleFilter();
-	void HandleTable(int);
+	void HandleRefreshTable();
 	void CheckBoxClicked(int state);
 	void ProcessTableItemClicked(int row);
 	void SeclectAllProviders(int state);
@@ -55,7 +55,7 @@ private:
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();
 	QPushButton* CreatSavePathButton();
-	QCheckBox* CreatShowProcessNameAndPIDBox();
+	QPushButton* CreatRefreshProcessPushButton();
 	QCheckBox *selectFilterAll;
 	QCheckBox *CreatSelectAllCheckBox();
 	QCheckBox *CreatShowSelectedProvidersBox();
@@ -83,7 +83,7 @@ private:
 	QPushButton* start;
 	QPushButton* end;
 	QPushButton* save;
-	QCheckBox* showProcessNameAndPID;
+	QPushButton* RefreshProcess;
 	QCheckBox* showSelectedProviders;
 	QTextEdit* textShowSelectedProviders;
 	QTableWidget* nameAndPIDTable;
@@ -95,6 +95,7 @@ private:
 	std::wstring filePath;
 	std::map<std::string, DWORD> processNameAndPIDMap;
 	std::vector<DWORD> selectedProcessID;
+	std::vector<QString> selectedProcessesNames;
 	QString selectedProcessName;
 	//Ui::TestClass ui;
 };

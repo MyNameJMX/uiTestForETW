@@ -13,7 +13,8 @@ scrollAreaFilted(nullptr),
 vBoxLayOutFilted(nullptr),//vBoxLayOutFilted
 groupBoxFilted(nullptr),//groupBoxFilted
 selectedProcessID(0),//initial ProcessID nullptr
-selectedProcessName()
+selectedProcessName(),
+selectedProcessesNames()
 {
 	filePath = (QCoreApplication::applicationDirPath()).toStdWString() + L"/Test.etl";//if path not set,default path "Workspace\Test.etl" 
 	const wchar_t* privilege[1] = { SE_SYSTEM_PROFILE_NAME };
@@ -33,7 +34,7 @@ selectedProcessName()
 	grid->addLayout(gridCom, 0, 1);
 	grid->addWidget(CreatFilterLineEdit(), 0, 2);
 	grid->addWidget(CreatShowSelectedProvidersBox(), 0, 3);
-	grid->addWidget(CreatShowProcessNameAndPIDBox(), 0, 0);
+	grid->addWidget(CreatRefreshProcessPushButton(), 0, 0);
 	grid->addWidget(CreatTable(), 1, 0);
 	scrollAreaAllProvider = new QScrollArea;
 	scrollAreaAllProvider->setWidget(CreatProvidesGroupBox());
@@ -49,7 +50,6 @@ selectedProcessName()
 	this->setLayout(grid);
 	this->setWindowTitle(tr("Test Version"));
 	this->resize(850, 490);
-
 }
 
 QPushButton* Test::CreatStartButton()
@@ -125,11 +125,11 @@ QLineEdit* Test::CreatFilterLineEdit()
 	return filter;
 }
 
-QCheckBox* Test::CreatShowProcessNameAndPIDBox() 
+QPushButton* Test::CreatRefreshProcessPushButton()
 {
-	showProcessNameAndPID = new QCheckBox(tr("ShowProcessNameAndPID"));
-	connect(showProcessNameAndPID, SIGNAL(stateChanged(int)), this, SLOT(HandleTable(int)));
-	return showProcessNameAndPID;
+	RefreshProcess = new QPushButton(tr("RefreshProcess"));
+	connect(RefreshProcess, SIGNAL(clicked()), this, SLOT(HandleRefreshTable()));
+	return RefreshProcess;
 }
 
 QTableWidget* Test::CreatTable() 
@@ -159,17 +159,11 @@ QTableWidget* Test::CreatTable()
 	return nameAndPIDTable;
 }
 
-void Test::HandleTable(int state) 
+void Test::HandleRefreshTable() 
 {
 	QObject* sender = QObject::sender();
-	if (state == Qt::Checked) 
-	{
-		nameAndPIDTable->show();
-	}
-	else 
-	{
-		nameAndPIDTable->hide();
-	}
+	delete nameAndPIDTable;
+	grid->addWidget(CreatTable(), 1, 0);
 }
 void Test::HandleStart()
 {
@@ -314,48 +308,58 @@ void Test::ProcessTableDoubleClicked()
 	QObject* sender = QObject::sender();
 	int rowCnt = ((QTableWidget*)sender)->rowCount();
 	int colCnt = ((QTableWidget*)sender)->columnCount();
-	for (int i = 1; i < rowCnt; ++i) 
+	if (selectedProcessID.size() != 0) 
 	{
-		((QTableWidget*)sender)->item(i, 0)->setSelected(false);
-		((QTableWidget*)sender)->item(i, 1)->setSelected(false);
+		for (int i = 1; i < rowCnt; ++i)
+		{
+			((QTableWidget*)sender)->item(i, 0)->setSelected(false);
+			((QTableWidget*)sender)->item(i, 1)->setSelected(false);
+		}
+		selectedProcessID.clear();
 	}
-	selectedProcessID.clear();
 }
+
 void Test::ProcessTableItemClicked(int row) 
 {
-
 	bool ok = true;
-	auto tableItem = nameAndPIDTable->item(row, 0);
+	auto tableItemName = nameAndPIDTable->item(row, 0);
 	DWORD pid;
- 	if (tableItem != nullptr)
+	QString name;
+ 	if (tableItemName != nullptr)
  	{
- 		selectedProcessName = tableItem->text();
+ 		selectedProcessName = tableItemName->text();
  	}
-	tableItem = nameAndPIDTable->item(row, 1);
-	if (tableItem != nullptr)
+	auto tableItemPID = nameAndPIDTable->item(row, 1);
+	if (tableItemPID != nullptr)
 	{
-		pid = tableItem->text().toULong(&ok, 10);
+		pid = tableItemPID->text().toULong(&ok, 10);
+		name = tableItemName->text();
 	}
 	auto itor = selectedProcessID.begin();
+	auto index = selectedProcessesNames.begin();
 	bool add = 1;//0 means no add
-	while (itor != selectedProcessID.end()) 
+	while (itor != selectedProcessID.end() && index != selectedProcessesNames.end()) 
 	{
-		if (*itor == pid)
+		if (*itor == pid && *index == name)
 		{
 			add = 0;
 			break;
 		}
 		++itor;
+		++index;
 	}
 	if (add == 1) 
 	{
 		selectedProcessID.push_back(pid);
+		selectedProcessesNames.push_back(name);
 	}
 	else 
 	{
 		selectedProcessID.erase(itor);
+		selectedProcessesNames.erase(index);
 	}
 }
+
 void Test::SeclectAllProviders(int state)
 {
 	int cntAllProviders = vecAllProviders.size();
@@ -429,6 +433,10 @@ void Test::ShowSeclectedProviders()
 		return;
 	}
 	QString text = "";
+	for (auto itor =selectedProcessesNames.begin(); itor != selectedProcessesNames.end(); ++itor) 
+	{
+		text = text + "\n" + *itor;
+	}
 	for (auto itor = SelectedProviders.begin(); itor != SelectedProviders.end(); ++itor)
 	{
 		text = text + "\n" + QString::fromStdWString(*itor);

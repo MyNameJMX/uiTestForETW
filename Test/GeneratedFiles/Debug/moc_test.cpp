@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Test_t {
     QByteArrayData data[19];
-    char stringdata0[245];
+    char stringdata0[252];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,25 +36,26 @@ QT_MOC_LITERAL(3, 32, 10), // "HandleSave"
 QT_MOC_LITERAL(4, 43, 11), // "HandleStart"
 QT_MOC_LITERAL(5, 55, 9), // "HandleEnd"
 QT_MOC_LITERAL(6, 65, 12), // "HandleFilter"
-QT_MOC_LITERAL(7, 78, 11), // "HandleTable"
-QT_MOC_LITERAL(8, 90, 15), // "CheckBoxClicked"
-QT_MOC_LITERAL(9, 106, 5), // "state"
-QT_MOC_LITERAL(10, 112, 23), // "ProcessTableItemClicked"
-QT_MOC_LITERAL(11, 136, 3), // "row"
-QT_MOC_LITERAL(12, 140, 19), // "SeclectAllProviders"
-QT_MOC_LITERAL(13, 160, 25), // "SeclectAllFiltedProviders"
-QT_MOC_LITERAL(14, 186, 22), // "ShowSeclectedProviders"
-QT_MOC_LITERAL(15, 209, 5), // "Timer"
-QT_MOC_LITERAL(16, 215, 10), // "closeEvent"
-QT_MOC_LITERAL(17, 226, 12), // "QCloseEvent*"
-QT_MOC_LITERAL(18, 239, 5) // "event"
+QT_MOC_LITERAL(7, 78, 18), // "HandleRefreshTable"
+QT_MOC_LITERAL(8, 97, 15), // "CheckBoxClicked"
+QT_MOC_LITERAL(9, 113, 5), // "state"
+QT_MOC_LITERAL(10, 119, 23), // "ProcessTableItemClicked"
+QT_MOC_LITERAL(11, 143, 3), // "row"
+QT_MOC_LITERAL(12, 147, 19), // "SeclectAllProviders"
+QT_MOC_LITERAL(13, 167, 25), // "SeclectAllFiltedProviders"
+QT_MOC_LITERAL(14, 193, 22), // "ShowSeclectedProviders"
+QT_MOC_LITERAL(15, 216, 5), // "Timer"
+QT_MOC_LITERAL(16, 222, 10), // "closeEvent"
+QT_MOC_LITERAL(17, 233, 12), // "QCloseEvent*"
+QT_MOC_LITERAL(18, 246, 5) // "event"
 
     },
     "Test\0ProcessTableDoubleClicked\0\0"
     "HandleSave\0HandleStart\0HandleEnd\0"
-    "HandleFilter\0HandleTable\0CheckBoxClicked\0"
-    "state\0ProcessTableItemClicked\0row\0"
-    "SeclectAllProviders\0SeclectAllFiltedProviders\0"
+    "HandleFilter\0HandleRefreshTable\0"
+    "CheckBoxClicked\0state\0ProcessTableItemClicked\0"
+    "row\0SeclectAllProviders\0"
+    "SeclectAllFiltedProviders\0"
     "ShowSeclectedProviders\0Timer\0closeEvent\0"
     "QCloseEvent*\0event"
 };
@@ -79,14 +80,14 @@ static const uint qt_meta_data_Test[] = {
        4,    0,   81,    2, 0x08 /* Private */,
        5,    0,   82,    2, 0x08 /* Private */,
        6,    0,   83,    2, 0x08 /* Private */,
-       7,    1,   84,    2, 0x08 /* Private */,
-       8,    1,   87,    2, 0x08 /* Private */,
-      10,    1,   90,    2, 0x08 /* Private */,
-      12,    1,   93,    2, 0x08 /* Private */,
-      13,    1,   96,    2, 0x08 /* Private */,
-      14,    0,   99,    2, 0x08 /* Private */,
-      15,    1,  100,    2, 0x08 /* Private */,
-      16,    1,  103,    2, 0x08 /* Private */,
+       7,    0,   84,    2, 0x08 /* Private */,
+       8,    1,   85,    2, 0x08 /* Private */,
+      10,    1,   88,    2, 0x08 /* Private */,
+      12,    1,   91,    2, 0x08 /* Private */,
+      13,    1,   94,    2, 0x08 /* Private */,
+      14,    0,   97,    2, 0x08 /* Private */,
+      15,    1,   98,    2, 0x08 /* Private */,
+      16,    1,  101,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -94,7 +95,7 @@ static const uint qt_meta_data_Test[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,    2,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::Int,    9,
     QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void, QMetaType::Int,    9,
@@ -117,7 +118,7 @@ void Test::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 2: _t->HandleStart(); break;
         case 3: _t->HandleEnd(); break;
         case 4: _t->HandleFilter(); break;
-        case 5: _t->HandleTable((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 5: _t->HandleRefreshTable(); break;
         case 6: _t->CheckBoxClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 7: _t->ProcessTableItemClicked((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 8: _t->SeclectAllProviders((*reinterpret_cast< int(*)>(_a[1]))); break;
