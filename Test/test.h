@@ -34,34 +34,34 @@ class Test : public QWidget
 public:
 	Test(QWidget *parent = 0);
 	private slots:
-	void ProcessTableDoubleClicked();
+	void ProcessTableDoubleClicked();//Any place double clicked,each process removed
 	void HandleSave();
 	void HandleStart();
 	void HandleEnd();
 	void HandleFilter();
 	void HandleRefreshTable();
-	void CheckBoxClicked(int state);
+	void ProviderCheckBoxClicked(int state);
 	void ProcessTableItemClicked(int row);
 	void SeclectAllProviders(int state);
 	void SeclectAllFiltedProviders(int state);
 	void ShowSeclectedProviders();
 	void Timer(int);
-	void closeEvent(QCloseEvent *event);
+	void CloseEvent(QCloseEvent *event);
 private:
-	ProcessNameAndPID *processNameAndPID;
-	QTimer* timer;
-	std::vector<ETWLib::SessionInfo> infos;
-	std::vector<std::wstring> allProvidersName;
 	QPushButton *CreatStartButton();
 	QPushButton *CreatEndButton();
 	QPushButton* CreatSavePathButton();
 	QPushButton* CreatRefreshProcessPushButton();
-	QCheckBox *selectFilterAll;
 	QCheckBox *CreatSelectAllCheckBox();
 	QCheckBox *CreatShowSelectedProvidersBox();
 	QGroupBox *CreatProvidesGroupBox();
 	QLineEdit *CreatFilterLineEdit();
-	QTableWidget* CreatTable();
+	QTableWidget* CreatProcessTable();
+	QTimer* timer;
+	ProcessNameAndPID *processNameAndPID;
+	std::vector<ETWLib::SessionInfo> infos;
+	std::vector<std::wstring> allProvidersName;	
+	QCheckBox *selectFilterAll;
 	QCheckBox *selectAll;
 	QCheckBox *selectFiltedAll;
 	QScrollArea* filterLeftProvidersScroll;
@@ -91,7 +91,7 @@ private:
 	std::unique_ptr<ETWLib::SessionParameters> param;
 	std::vector<QCheckBox*> vecAllProviders;//1079
 	std::vector<QCheckBox*> vecAllFilterProviders;
-	std::set<std::wstring> SelectedProviders;
+	std::set<std::wstring> selectedProviders;
 	std::wstring filePath;
 	std::map<std::string, DWORD> processNameAndPIDMap;
 	std::vector<DWORD> selectedProcessID;
